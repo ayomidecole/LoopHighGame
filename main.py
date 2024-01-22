@@ -61,37 +61,43 @@ class HallwayEnter(Scene):
             """))
             return 'hallway_cont'
 
-
-
-
-
 class SideExitDoor(Scene):
+  def __init__(self):
+      super().__init__()
+      self.entered = False  # Add this attribute to track if the scene has been entered
 
-    def enter(self):
-        print(dedent('''
-        The light hits your face. There is nothing apart from the cars, 
-        you look into the cars parked outside the school and there is no clue to why 
-        this is happening. You considering going into the hallway or going into the gym.
-        The gym is crowded for the game. Hopefully you can find a clue 
-        '''))
+  def enter(self):
+      if self.entered:
+          return 'hallway_cont'  # Return the appropriate scene if already entered
 
-        action = input('Gym or Hallway? > ').lower()
+      print(dedent('''
+      The light hits your face. There is nothing apart from the cars, 
+      you look into the cars parked outside the school and there is no clue to why 
+      this is happening. You considering going into the hallway or going into the gym.
+      The gym is crowded for the game. Hopefully you can find a clue 
+      '''))
 
-        if 'gym' in action or 'game' in action:
-            print(dedent("""
-            You decide to go to the gym, it would be ahrd  for you to figure things out 
-            and find the source of this loop due to it being gameday. A situation 
-            like this does not give you many choices so you decide to risk it
-            """))
-            return 'gym'
+      action = input('Gym or Hallway? > ').lower()
 
-        if 'hallway' in action or 'hall' in action:
-            print(dedent("""
-            You decide to go back into the hallway, you think it is better to search the
-            less crowded parts of the school for the cause of the loop before going to
-            the gym
-            """))
-            return 'hallway_cont'
+      if 'gym' in action or 'game' in action:
+          print(dedent("""
+          You decide to go to the gym, it would be hard for you to figure things out 
+          and find the source of this loop due to it being gameday. A situation 
+          like this does not give you many choices so you decide to risk it
+          """))
+          self.entered = True  # Set the entered attribute to True
+          return 'gym'
+
+      elif 'hallway' in action or 'hall' in action:
+          print(dedent("""
+          You decide to go back into the hallway, you think it is better to search the
+          less crowded parts of the school for the cause of the loop before going to
+          the gym
+          """))
+          self.entered = True  # Set the entered attribute to True
+          return 'hallway_cont'
+
+
 
 class Cafeteria(Scene):
     def enter(self):
@@ -116,51 +122,53 @@ class Cafeteria(Scene):
 
 
 class HallwayCont(Scene):
+  def enter(self):
+      print(dedent('''
+      You rejoin the crowd and keep walking down the hallway.
+      You run into Seyi. She is drunk, screaming about how excited she is for the
+      game.
+      You tell her your whole loop situation and she sounds bored. She remarks that 
+      this is a science room type of problem. She enthusiastically asks you to join
+      her and go to the gym for the game.
+      It clicks that there is a physics lab nearby
+      '''))
 
-    def enter(self):
-        print(dedent('''
-        You rejoin the cloud and keep walking down the hallway.
-        You run into the Seyi. She is drunk screaming about how excited she is for the
-        game.
-        You tell her your whole loop situation and she sounds bored. She remarks that 
-        this is a science room type of problem. She enthusiastically asks you to join
-        her and go to the gym for the game.
-        It clicks that there is a physics lab nearby
-        '''))
+      action = input('You think about what she says, Physics lab or Gym > ').lower()
 
-        action = input('You think about what she says, Physics lab or Gym > ').lower()
-        if 'physics' in action or 'lab' in action:
-            print(dedent("""
-            You decide to go to the physics lab. Maybe Drunk Seyi was onto something.
-            """))
-            return 'physics_lab'
-
-        else:
+      if 'physics' in action or 'lab' in action:
           print(dedent("""
-          You decide to go to the gym. 
-          You are determined to find out what's going on"""))
-          return 'gym'
-          
-
-class Gym(Scene):
-
-    def enter(self):
-        print(dedent("""
-        You follow Seyi into the crowded gym. You leaver her in a daze.
-        You scramble around the gym without a sense of the occasion
-        lookig for a potential clue to why this crazy loop is going on.
-        """))
-
-        action = input('What do you do next? > ').lower()
-        if 'physics' in action or 'lab' in action:
-          print(dedent("""
-          You remember Seyi talking about the pyshics lab.
-          You are sarting to lose hope. This is the last room 
-          you have the heart to search
+          You decide to go to the physics lab. Maybe Drunk Seyi was onto something.
           """))
           return 'physics_lab'
-        else:
-          return "gameend"
+      elif action.strip() == '':
+          print("You didn't enter a valid option. Try again.")
+          return 'hallway_cont'
+      else:
+          return 'gym'
+
+
+class Gym(Scene):
+  def enter(self):
+      print(dedent("""
+      You scramble around the gym without a sense of the occasion,
+      looking for a potential clue to why this crazy loop is going on.
+      """))
+
+      while True:
+          action = input('What do you do next? > ').lower()
+
+          if 'physics' in action or 'lab' in action:
+              print(dedent("""
+              You remember Seyi talking about the physics lab.
+              You are starting to lose hope. This is the last room 
+              you have the heart to search.
+              """))
+              return 'physics_lab'
+          elif action.strip() == '':
+              print("You didn't enter a valid option. Try again.")
+          else:
+              return "gameend"
+
 
 class PhysicsLab(Scene):
     def enter(self):
@@ -189,9 +197,6 @@ class PhysicsLab(Scene):
           """))
           return 'finished'
 
-
-
-
 class Finished(Scene):
 
     def enter(self):
@@ -210,7 +215,7 @@ class Map(object):
         'hallway_enter': HallwayEnter(),
         'side_exit_door': SideExitDoor(),
         'cafe': Cafeteria(),
-        'hallway_cont': HallwayCont(),  # Add this line
+        'hallway_cont': HallwayCont(),  
         'gym': Gym(),
         'gameend' : GameEnd(),
         'physics_lab': PhysicsLab(),

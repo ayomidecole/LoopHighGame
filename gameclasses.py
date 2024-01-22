@@ -10,7 +10,8 @@ class Engine(object):
           next_scene_name = current_scene.enter()
           current_scene = self.scene_map.next_scene(next_scene_name)
 
-          current_scene.enter()
+      current_scene.enter()
+
 
 
 class Scene(object): #This is the base class that will have common things that all scenes do
