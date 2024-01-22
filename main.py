@@ -4,7 +4,6 @@ from random import randint
 from sys import exit
 from textwrap import dedent
 
-
 class LoopCity(Engine):
     def __init__(self, scene_map, game_duration=300):
         super().__init__(scene_map)
@@ -131,15 +130,81 @@ class HallwayCont(Scene):
 
         action = input('You think about what she says, Physics lab or Gym > ').lower()
         if 'physics' in action or 'lab' in action:
+            print(dedent("""
+            You decide to go to the physics lab. Maybe Drunk Seyi was onto something.
+            """))
+            return 'physics_lab'
+
+        else:
+          print(dedent("""
+          You decide to go to the gym. 
+          You are determined to find out what's going on"""))
+          return 'gym'
           
 
 class Gym(Scene):
 
     def enter(self):
-        pass
+        print(dedent("""
+        You follow Seyi into the crowded gym. You leaver her in a daze.
+        You scramble around the gym without a sense of the occasion
+        lookig for a potential clue to why this crazy loop is going on.
+        """))
+
+        action = input('What do you do next? > ').lower()
+        if 'physics' in action or 'lab' in action:
+          print(dedent("""
+          You remember Seyi talking about the pyshics lab.
+          You are sarting to lose hope. This is the last room 
+          you have the heart to search
+          """))
+          return 'physics_lab'
+        else:
+          return "gameend"
 
 class PhysicsLab(Scene):
+    def enter(self):
+        print(dedent("""
+        How did you not come in here any sooner. You see an unfamiliar machine.
+        You notice the time is moving weird. You decide this is it.
+        If the machine does not end the loop you give up.
+        There is a number pad on the machine and the screen says
+        Enter command from 1-10
+        """))
+    
+        number = randint(1,10)
+        guess = int(input('Enter a number from 1-10 > '))
 
+        if int(guess) != number:
+            print(dedent("""
+            'The machine malfunctions. When the countdown goes down
+            The loop starts again but the machine does not allow you enter a command
+            The loop starts again. You are trapped'
+            """))
+            return 'gameend'  
+
+        else:
+          print(dedent("""
+          The machine processes for a bit
+          """))
+          return 'finished'
+
+
+
+
+class Finished(Scene):
+
+    def enter(self):
+        print(dedent("""
+        You see on the screen.
+        Timeline Reset. Machine off.
+        BOOOM! You wake up after the game ends.
+        You defeated the loop.
+        OR ARE YOU?
+        IN ANOTHER LOOP.
+        """))
+        exit(0)
+  
 class Map(object):
     scenes = {
         'hallway_enter': HallwayEnter(),
@@ -149,6 +214,7 @@ class Map(object):
         'gym': Gym(),
         'gameend' : GameEnd(),
         'physics_lab': PhysicsLab(),
+        'finished': Finished()
     }
 
     def __init__(self, start_scene):
